@@ -9,7 +9,21 @@ class Game:
         self.current_block = self.get_random_block()
         self.next_block = self.get_random_block()
         self.game_over = False
+        self.score = 0
+    
+    # Tính điểm
+    def update_score(self, line_cleared, move_down_points):
+        if line_cleared == 1:
+            self.score += 100
+        elif line_cleared == 2:
+            self.score += 200
+        elif line_cleared == 3:
+            self.score += 300
+        elif line_cleared == 4:
+            self.score += 400
+        self.score += move_down_points
 
+    # Lấy khối ngẫu nhiên
     def get_random_block(self):
         # Nếu không còn khối nào trong danh sách, khởi tạo lại danh sách
         if len(self.blocks) == 0:
@@ -46,7 +60,8 @@ class Game:
             self.grid.grid[position.row][position.col] = self.current_block.id
         self.current_block = self.next_block
         self.next_block = self.get_random_block()
-        self.grid.clear_full()
+        row_cleared = self.grid.clear_full()
+        self.update_score(row_cleared,0)
         if self.block_fits() == False:
             self.game_over = True
 
@@ -75,7 +90,14 @@ class Game:
     # Vẽ khối và lưới lên màn hình
     def draw(self, screen):
         self.grid.draw(screen)
-        self.current_block.draw(screen)
+        self.current_block.draw(screen, 11, 11)
+
+        if self.next_block.id == 3:
+            self.next_block.draw(screen,280,310)
+        elif self.next_block.id == 4: 
+            self.next_block.draw(screen,280,300)
+        elif self.next_block.id not in (3, 4): 
+            self.next_block.draw(screen, 300, 300)
 
     # Khởi động lại game
     def reset (self):
@@ -83,3 +105,4 @@ class Game:
         self.blocks = [I_block(), L_block(), J_block(), O_block(), S_block(), T_block(), Z_block()]
         self.current_block = self.get_random_block()
         self.next_block = self.get_random_block()
+        self.score = 0
