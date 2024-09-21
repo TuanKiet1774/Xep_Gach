@@ -16,10 +16,11 @@ next_surface = title_font.render("NEXT BLOCK", True, Colors.white)
 # Thông báo két thúc
 over_surface = title_font.render("GAME OVER !!!", True, Colors.red)
 
-#Khung điểm, khối tiếp theo, thông báo
+#Khung điểm, khối tiếp theo, thông báo, thời gian
 score_rect = pygame.Rect(330, 70, 200, 60)
 next_rect = pygame.Rect(330, 240, 200, 180)
 over_rect = pygame.Rect(30, 150, 270, 100)
+time_rect = pygame.Rect(330, 450, 200, 60)
 
 # Cửa sổ trò chơi, chiều rộng , chiều dài
 screen = pygame.display.set_mode((550,620))
@@ -31,10 +32,19 @@ pygame.display.set_caption("Tetris")
 clock = pygame.time.Clock()
 game = Game()
 
+# Thời gian game, lấy thời gian bắt đầu
+start = pygame.time.get_ticks()
+
+# Biến tính thời gian dừng lại khi game over
+end_game_time = None 
+
 # Tạo sự kiện để đặt thời gian rơi xuống cho các khối
 GAME_UPDATE = pygame.USEREVENT
+
 # Thời gian của sự kiện 
-pygame.time.set_timer(GAME_UPDATE,300)
+speed_flag = False
+speed_game = 700
+pygame.time.set_timer(GAME_UPDATE,speed_game)
 
 # Lấy các sự kiện của người chơi
 while True: 
@@ -48,6 +58,11 @@ while True:
       if game.game_over == True:
         game.game_over = False
         game.reset()
+        start = pygame.time.get_ticks()
+        end_game_time = None
+        speed_game = 700
+        pygame.time.set_timer(GAME_UPDATE, speed_game)
+        speed_flag = False
       if event.key == pygame.K_LEFT and not game.game_over:
         game.move_left()
       if event.key == pygame.K_RIGHT and not game.game_over:
@@ -66,12 +81,36 @@ while True:
   screen.blit(score_surface,(385, 20, 50, 50))
   screen.blit(next_surface,(340, 180, 50, 50))
 
-  #Khung điểm
+  #Khung điểm, khung khối tiếp theo, khung thời gian
   pygame.draw.rect(screen, Colors.light_blue, score_rect, 0, 10)
-
-  # Khung khối tiếp theo
   pygame.draw.rect(screen, Colors.light_blue, next_rect, 0, 10)
+  pygame.draw.rect(screen, Colors.light_blue, time_rect, 0, 20)
   
+  # Nếu game over, giữ nguyên thời gian khi game kết thúc
+  if game.game_over and end_game_time is None:
+    end_game_time = (pygame.time.get_ticks() - start) // 1000
+  if game.game_over:
+    end = end_game_time
+  else:
+    end = (pygame.time.get_ticks() - start) // 1000
+
+  # Tăng tốc game sau 1 thời gian game
+  if (pygame.time.get_ticks() - start) // 1000 >= 30 and speed_flag == False:
+    speed_game -= 300
+    pygame.time.set_timer(GAME_UPDATE, speed_game)
+    speed_flag = True
+
+
+  # Thời gian tính bằng giây
+  minutes = end // 60
+  seconds = end % 60
+
+  time_text = f"{minutes:02} : {seconds:02}"
+
+  # Render thời gian và vẽ lên màn hình
+  time_surface = title_font.render(time_text, True, Colors.green)
+  screen.blit(time_surface, (380, 455 ,50, 50))
+
   # Hiển thị điểm
   score_value = title_font.render(str(game.score), True, Colors.yellow)
   screen.blit(score_value,score_value.get_rect(centerx = score_rect.centerx, centery = score_rect.centery))
