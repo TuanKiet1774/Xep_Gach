@@ -1,3 +1,4 @@
+""" Tải Pygame: Mở PowerShell -> pip install pygame-ce """ 
 import sys
 import pygame 
 from game import Game

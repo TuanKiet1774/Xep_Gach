@@ -16,11 +16,11 @@ class Game:
         if line_cleared == 1:
             self.score += 100
         elif line_cleared == 2:
-            self.score += 200
-        elif line_cleared == 3:
             self.score += 300
+        elif line_cleared == 3:
+            self.score += 500
         elif line_cleared == 4:
-            self.score += 400
+            self.score += 800
         self.score += move_down_points
 
     # Lấy khối ngẫu nhiên

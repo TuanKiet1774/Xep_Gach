@@ -41,5 +41,5 @@ class Block:
   #Xoay ngược
   def undo_rotate(self):
     self.rotation_state -= 1
-    if self.rotation_state == 0:
+    if self.rotation_state == -1:
       self.rotation_state = len(self.cells) - 1
